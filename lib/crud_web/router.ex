@@ -5,12 +5,18 @@ defmodule CrudWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", CrudWeb do
+  scope "/auth", CrudWeb do
     pipe_through :api
 
-    get "/users", UserController, :index
-    post "/login", UserController, :login
-    post "/register", UserController, :register
+    post "/login", AuthController, :login
+    post "/register", AuthController, :register
+  end
+
+  scope "/users", CrudWeb do
+    pipe_through [:api, CrudWeb.Middlewares.Authorizer]
+
+    get "/", UserController, :index
+    get "/me", UserController, :me
   end
 
   # Enables LiveDashboard only for development
